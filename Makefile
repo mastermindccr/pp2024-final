@@ -17,4 +17,4 @@ openmp_report:
 	perf report
 
 clean:
-	@$(RM) md5
+	@$(RM) md5_thread md5_openmp
