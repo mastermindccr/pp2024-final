@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         printf("Usage: %s <hash>\n", argv[0]);
         return 1;
     }
-    uint8_t result[16];
+
     uint8_t target[16];
     for(int i = 0;i<16;i++) {
         sscanf(argv[1] + 2*i, "%2hhx", target + i);
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     int found = 0;
 
     omp_set_num_threads(32);
-    #pragma omp parallel for schedule(dynamic, 1024)
+    #pragma omp parallel for schedule(dynamic, 1024) shared(found)
     for(int i = 0; i<total; i+=BATCH_SIZE) { // enumerate all possible strings
         if(found) continue;
         //-------------

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/time.h>
-#include <pthread.h>
 #include <omp.h>
 
 #include "md5.h"

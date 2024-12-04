@@ -223,39 +223,39 @@ void md5File(FILE *file, uint8_t *result){
     memcpy(result, ctx.digest, 16);
 }
 
-void md5String_SIMD(char *inputs[4], uint8_t *results[4]) {
-    // 創建4個上下文
-    MD5Context ctx[4];
+void md5String_SIMD(char *inputs[8], uint8_t *results[8]) {
+    // 創建8個上下文
+    MD5Context ctx[8];
     
-    // 使用AVX2指令同時初始化4個上下文
+    // 使用AVX2指令同時初始化8個上下文
     __m256i init_a = _mm256_set1_epi32(0x67452301);
     __m256i init_b = _mm256_set1_epi32(0xefcdab89);
     __m256i init_c = _mm256_set1_epi32(0x98badcfe);
     __m256i init_d = _mm256_set1_epi32(0x10325476);
     
-    // 並行初始化4個上下文
-    for(int i = 0; i < 4; i++) {
+    // 並行初始化8個上下文
+    for(int i = 0; i < 8; i++) {
         ctx[i].size = 0;
-        ctx[i].buffer[0] = _mm256_extract_epi32(init_a, 0);
-        ctx[i].buffer[1] = _mm256_extract_epi32(init_b, 0);
-        ctx[i].buffer[2] = _mm256_extract_epi32(init_c, 0);
-        ctx[i].buffer[3] = _mm256_extract_epi32(init_d, 0);
+        ctx[i].buffer[0] = _mm256_extract_epi64(init_a, 0);
+        ctx[i].buffer[1] = _mm256_extract_epi64(init_b, 0);
+        ctx[i].buffer[2] = _mm256_extract_epi64(init_c, 0);
+        ctx[i].buffer[3] = _mm256_extract_epi64(init_d, 0);
     }
     
-    // 並行處理4個輸入
-    for(int i = 0; i < 4; i++) {
+    // 並行處理8個輸入
+    for(int i = 0; i < 8; i++) {
         md5Update(&ctx[i], (uint8_t *)inputs[i], strlen(inputs[i]));
     }
     
     // SIMD優化的Finalize步驟
-    __m256i buffer[4];  // 用於存儲4個上下文的buffer
-    for(int i = 0; i < 4; i++) {
-        // 載入4個上下文的buffer到SIMD寄存器
+    __m256i buffer[8];  // 用於存儲4個上下文的buffer
+    for(int i = 0; i < 8; i++) {
+        // 載入8個上下文的buffer到SIMD寄存器
         buffer[i] = _mm256_loadu_si256((__m256i*)ctx[i].buffer);
     }
     
     // 並行處理最後的MD5步驟
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 8; i++) {
         md5Finalize(&ctx[i]);
         // 將結果複製到對應的輸出buffer
         memcpy(results[i], ctx[i].digest, 16);

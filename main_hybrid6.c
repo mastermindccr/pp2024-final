@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         printf("Usage: %s <hash>\n", argv[0]);
         return 1;
     }
-    uint8_t result[16];
+
     uint8_t target[16];
     for(int i = 0;i<16;i++) {
         sscanf(argv[1] + 2*i, "%2hhx", target + i);
