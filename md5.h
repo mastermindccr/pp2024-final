@@ -19,6 +19,7 @@ void md5Finalize(MD5Context *ctx);
 void md5Step(uint32_t *buffer, uint32_t *input);
 
 void md5String(char *input, uint8_t *result);
+void md5String_SIMD(char *inputs[4], uint8_t *results[4]);
 void md5File(FILE *file, uint8_t *result);
 
 #endif
