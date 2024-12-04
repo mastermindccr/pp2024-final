@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include <pthread.h>
-#include <stdatomic.h>
 
 #include "md5.h"
 
@@ -11,7 +10,7 @@ char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 int target_size = 6;
 const int thread_cnt = 32;
 const long long total = 56800235584; // 62^6
-atomic_int found = 0;
+int found = 0;
 uint8_t target[16];
 
 char* generate_string(int number) {
@@ -27,12 +26,12 @@ char* generate_string(int number) {
 void thread_func(void* arg) {
     long long id = *(int*)arg;
     for(long long i = id;i<total;i+=thread_cnt) { // enumerate all possible strings
-        if(atomic_load(&found)) break;
+        if(found) break;
         char* str = generate_string(i);
         uint8_t result[16];
         md5String(str, result);
         if(!memcmp(result, target, 16)){
-            atomic_store(&found, 1);
+            found = 1;
             printf("Found: %s\n", str);
             break;
         }
