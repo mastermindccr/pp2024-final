@@ -5,10 +5,10 @@
 
 #include "md5.h"
 
-#define BATCH_SIZE 4
+#define BATCH_SIZE 8
 
 char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-int target_size = 5;
+int target_size = 6;
 
 char* generate_string(int number) {
     char* result = (char*) malloc(target_size+1);
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < BATCH_SIZE; i++) {
         results[i] = result_buffers[i];
     }
-    for(int i = 0; i<916,132,832; i+=BATCH_SIZE) { // enumerate all possible strings
+    for(long long i = 0; i<916,132,832; i+=BATCH_SIZE) { // enumerate all possible strings
         
         // 生成一批字串
         for(int j = 0; j < BATCH_SIZE; j++) {
@@ -55,13 +55,14 @@ int main(int argc, char *argv[]) {
     
         // 檢查結果
         for(int j = 0; j < BATCH_SIZE; j++) {
+            // printf("It is %s\n", strings[j]);
             if(!memcmp(results[j], target, 16)){
                 printf("Found: %s\n", strings[j]);
                 goto found;
             }
         }
         for(int j = 0; j < BATCH_SIZE; j++) {
-            free(strings[j]);
+            free(strings[j]); 
         }
     }
     found:
