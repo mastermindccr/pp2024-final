@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     int found = 0;
 
     omp_set_num_threads(32);
-    #pragma omp parallel for schedule(dynamic, 1024)
+    #pragma omp parallel for schedule(dynamic, 1024) shared(found)
     for(long long i = 0; i<total; i+=BATCH_SIZE) { // enumerate all possible strings
         if(found) continue;
         //-------------
