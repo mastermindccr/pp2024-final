@@ -40,13 +40,13 @@ int main(int argc, char *argv[]) {
     uint8_t result_buffers[BATCH_SIZE][16];
     
     // 設置results指針陣列
-    for(int i = 0; i < BATCH_SIZE; i++) {
+    for(long long i = 0; i < BATCH_SIZE; i++) {
         results[i] = result_buffers[i];
     }
     for(long long i = 0; i<total; i+=BATCH_SIZE) { // enumerate all possible strings
         
         // 生成一批字串
-        for(int j = 0; j < BATCH_SIZE; j++) {
+        for(long long j = 0; j < BATCH_SIZE; j++) {
             strings[j] = generate_string(i + j);
         }
     
@@ -54,14 +54,14 @@ int main(int argc, char *argv[]) {
         md5String_SIMD(strings, results);
     
         // 檢查結果
-        for(int j = 0; j < BATCH_SIZE; j++) {
+        for(long long j = 0; j < BATCH_SIZE; j++) {
             // printf("It is %s\n", strings[j]);
             if(!memcmp(results[j], target, 16)){
                 printf("Found: %s\n", strings[j]);
                 goto found;
             }
         }
-        for(int j = 0; j < BATCH_SIZE; j++) {
+        for(long long j = 0; j < BATCH_SIZE; j++) {
             free(strings[j]); 
         }
     }
