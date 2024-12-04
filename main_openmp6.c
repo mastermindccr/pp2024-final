@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     // start of test
     int found = 0;
 
+    omp_set_num_threads(32);
     #pragma omp parallel for schedule(dynamic, 1024) shared(found)
     for(long long i = 0;i<total;i++) { // enumerate all possible strings
         if(found) continue;

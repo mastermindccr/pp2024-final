@@ -3,12 +3,15 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include <pthread.h>
-#include <omp.h>
+#include <stdatomic.h>
 
 #include "md5.h"
 
 char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 int target_size = 5;
+const int thread_cnt = 32;
+const int total = 916132832; // 62^5;
+atomic_int found = 0;
 uint8_t target[16];
 
 char* generate_string(int number) {
@@ -19,6 +22,22 @@ char* generate_string(int number) {
         number /= 62;
     }
     return result;
+}
+
+void thread_func(void* arg) {
+    int id = *(int*)arg;
+    for(int i = id;i<total;i+=thread_cnt) { // enumerate all possible strings
+        if(atomic_load(&found)) break;
+        char* str = generate_string(i);
+        uint8_t result[16];
+        md5String(str, result);
+        if(!memcmp(result, target, 16)){
+            atomic_store(&found, 1);
+            printf("Found: %s\n", str);
+            break;
+        }
+        free(str);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -32,26 +51,17 @@ int main(int argc, char *argv[]) {
     }
 
     struct timeval start, end;
-    int total = 916132832; // 62^5
     gettimeofday(&start, NULL);
     // start of test
-    int found = 0;
 
-    omp_set_num_threads(32);
-    #pragma omp parallel for schedule(dynamic, 1024) shared(found)
-    for(int i = 0;i<total;i++) { // enumerate all possible strings
-        if(found) continue;
-        char* str = generate_string(i);
-        uint8_t result[16];
-        md5String(str, result);
-        if(!memcmp(result, target, 16)){
-            #pragma omp critical
-            {
-                found = 1;
-            }
-            printf("Found: %s\n", str);
-        }
-        free(str);
+    pthread_t threads[thread_cnt];
+
+    for(int i = 0;i<thread_cnt;i++) {
+        pthread_create(&threads[i], NULL, (void*)thread_func, &i);
+    }
+
+    for(int i = 0;i<thread_cnt;i++) {
+        pthread_join(threads[i], NULL);
     }
     
     // end of test

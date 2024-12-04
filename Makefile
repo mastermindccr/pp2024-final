@@ -2,8 +2,11 @@ CC = gcc
 
 CFLAGS = -Ofast
 
-thread: md5.c main_thread.c
-	@$(CC) $(CFLAGS) -lpthread -o md5_thread md5.c main_thread.c
+thread5: md5.c main_thread5.c
+	@$(CC) $(CFLAGS) -lpthread -o md5_thread5 md5.c main_thread5.c
+
+thread6: md5.c main_thread6.c
+	@$(CC) $(CFLAGS) -lpthread -o md5_thread6 md5.c main_thread6.c
 
 openmp5: md5.c main_openmp5.c
 	@$(CC) $(CFLAGS) -fopenmp -o md5_openmp5 md5.c main_openmp5.c
