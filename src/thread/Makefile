@@ -2,6 +2,8 @@ CC = gcc
 
 CFLAGS = -Ofast -mavx2 -march=native
 
+all: thread5 thread6 openmp5 openmp6 hybrid5 hybrid6
+
 hybrid5: md5.c main_hybrid5.c
 	@$(CC) $(CFLAGS) -lpthread -fopenmp -o md5_hybrid5 md5.c main_hybrid5.c
 
